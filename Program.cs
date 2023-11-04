@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using C_GQLTesting.Data;
+using C_GQLTesting.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 if (builder.Environment.IsDevelopment()) {
@@ -18,6 +18,13 @@ builder.Services.AddDbContext<C_GQLTestingContext>(options =>
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    SeedData.Initialize(services);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
