@@ -20,11 +20,28 @@ namespace C_GQLTesting.Controllers
         }
 
         // GET: People
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
-              return _context.Person != null ? 
-                          View(await _context.Person.ToListAsync()) :
-                          Problem("Entity set 'C_GQLTestingContext.Person'  is null.");
+            if (_context.Person == null) 
+            {
+                return Problem("Person is null");
+            }
+
+            var people = from p in _context.Person
+                        select p;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                people = people.Where(s => s.FirstName!.Contains(searchString));
+            }
+
+            return View(await people.ToListAsync());
+        }
+
+        [HttpPost]
+        public string Index(string searchString, bool notUsed)
+        {
+            return "From [HttpPost]Index: filter on " + searchString;
         }
 
         // GET: People/Details/5
